@@ -10,6 +10,8 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
+from datetime import datetime
+import uuid
 
 
 class HBNBCommand(cmd.Cmd):
@@ -124,6 +126,9 @@ class HBNBCommand(cmd.Cmd):
         updated_args = args[(index + 1):len(args)]
         res = updated_args.split()
         Kwargs = {}
+        Kwargs['created_at'] = datetime.utcnow().isoformat()
+        Kwargs['updated_at'] = datetime.utcnow().isoformat()
+        Kwargs['id'] = str(uuid.uuid4())
         for item in res:
             arraY = item.split("=")
             arraY[1] = arraY[1].strip('"')
@@ -135,17 +140,16 @@ class HBNBCommand(cmd.Cmd):
             else:
                 arraY[1] = arraY[1].replace("_", ' ')
             Kwargs[arraY[0]] = arraY[1]
-        print(Kwargs)
         if not args:
             print("** class name missing **")
             return
         elif className not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        # new_instance = HBNBCommand.classes[args]()
-        # storage.save()
-        # print(new_instance.id)
-        # storage.save()
+        new_instance = HBNBCommand.classes[className](**Kwargs)
+        storage.save()
+        print(new_instance.id)
+        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
